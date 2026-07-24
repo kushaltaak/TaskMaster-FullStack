@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -27,13 +28,57 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  void registerUser() {
+  Future<void> registerUser() async {
+
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Registration Successful"),
-        ),
-      );
+
+      try {
+
+        final response =
+        await ApiService.register(
+          nameController.text.trim(),
+          emailController.text.trim(),
+          passwordController.text.trim(),
+        );
+
+        if (response["user"] != null) {
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                "Registration Successful",
+              ),
+            ),
+          );
+
+          Navigator.pop(context);
+
+        } else {
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                response["message"] ??
+                    "Registration Failed",
+              ),
+            ),
+          );
+        }
+
+      } catch (e) {
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Network Error",
+            ),
+          ),
+        );
+
+        print(e);
+      }
+
+
     }
   }
 

@@ -29,48 +29,62 @@ class _LoginScreen extends State<LoginScreen> {
 
   Future<void> loginUser() async {
 
+    print("LOGIN BUTTON CLICKED");
+
     if (_formkey.currentState!.validate()) {
 
-      final response =
-      await ApiService.login(
-        emailController.text.trim(),
-        passwordController.text.trim(),
-      );
+      print("VALIDATION PASSED");
+      try {
 
-      print(response);
-
-      if (response["token"] != null) {
-
-        await AuthService.saveToken(
-          response["token"],
+        final response =
+        await ApiService.login(
+          emailController.text.trim(),
+          passwordController.text.trim(),
         );
 
-        String? savedToken =
-        await AuthService.getToken();
+        print("LOGIN RESPONSE:");
+        print(response);
 
-        print("SAVED TOKEN:");
-        print(savedToken);
+        if (response["token"] != null) {
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => HomeScreen(),
-          ),
-        );
-      } else {
+          await AuthService.saveToken(
+            response["token"],
+          );
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => HomeScreen(),
+            ),
+          );
+
+        } else {
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                response["message"] ??
+                    "Login Failed",
+              ),
+            ),
+          );
+        }
+
+      } catch (e) {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              response["message"] ??
-                  "Login Failed",
+              "Network Error",
             ),
           ),
         );
+
+        print(e);
       }
+
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
