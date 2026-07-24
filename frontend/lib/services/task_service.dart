@@ -5,7 +5,7 @@ import 'auth_service.dart';
 class TaskService {
 
   static const String baseUrl =
-      "http://10.0.2.2:5000";
+      "https://taskmaster-fullstack.onrender.com";
 
   static Future<void> createTask({
     required String title,
